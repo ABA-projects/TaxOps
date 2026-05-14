@@ -1,0 +1,57 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+
+# ── Build / distribución pip ──────────────────────────────────────────────────
+dist/
+build/
+*.egg-info/
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+
+# ── Entornos virtuales ────────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+.env/
+
+# ── Variables de entorno ──────────────────────────────────────────────────────
+.env
+.env.local
+*.env
+
+# ── Facturas y datos fiscales (documentos privados) ───────────────────────────
+/facturas/
+*.pdf
+*.xml
+*.docx
+*.doc
+
+# ── Archivos generados / Excel ────────────────────────────────────────────────
+output/
+logs/
+*.xlsx
+*.xls
+*.log
+
+# ── Streamlit ─────────────────────────────────────────────────────────────────
+.streamlit/secrets.toml
+
+# ── Sistema operativo ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDEs ──────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.worktrees/
+
+# ── Next.js (taxops-web) ──────────────────────────────────────────────────────
+taxops-web/.next/
+taxops-web/node_modules/
+taxops-web/.env.local
