@@ -7,6 +7,12 @@ Uso:
     python main.py --workers 8
 """
 
+import sys
+from pathlib import Path
+_api = str(Path(__file__).parent / "api")
+if _api not in sys.path:
+    sys.path.insert(0, _api)
+
 import argparse
 import logging
 import os

@@ -1,24 +1,9 @@
 """TaxOps FastAPI — entry point.
 
-Estructura de imports:
-  - api/ → este directorio (routers, schemas, dependencies, core/)
-  - pipeline/, services/, db/, exogenas/ → directorio padre (proyecto-facturas/)
-
-El sys.path.insert garantiza que al ejecutar `uvicorn main:app` desde api/,
-el directorio raíz del proyecto quede en el path de Python.
+Todos los módulos (services/, db/, pipeline/, exogenas/, routers/, core/)
+viven dentro de api/ — no se requiere sys.path manipulation.
 """
 from __future__ import annotations
-
-import sys
-from pathlib import Path
-
-# Local dev: parent.parent = project root where services/, db/ etc. live
-# Vercel:    parent       = /var/task/ where includeFiles bundles services/, db/ etc.
-_API_DIR = Path(__file__).parent
-_ROOT = _API_DIR.parent
-for _p in [str(_API_DIR), str(_ROOT)]:
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
 
 from contextlib import asynccontextmanager
 

@@ -1,5 +1,11 @@
 """Home.py — Entrypoint y router principal de TaxOps."""
 
+import sys
+from pathlib import Path
+_api = str(Path(__file__).parent / "api")
+if _api not in sys.path:
+    sys.path.insert(0, _api)
+
 import streamlit as st
 
 from home_gate import login_required, get_auth_session

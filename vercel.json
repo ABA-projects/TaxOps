@@ -9,10 +9,5 @@
       "entrypoint": "api",
       "routePrefix": "/_/web"
     }
-  },
-  "functions": {
-    "api/index.py": {
-      "includeFiles": ["services/**", "db/**", "pipeline/**", "exogenas/**"]
-    }
   }
 }
