@@ -6,8 +6,13 @@
       "framework": "nextjs"
     },
     "web": {
-      "entrypoint": ".",
+      "entrypoint": "api",
       "routePrefix": "/_/web"
+    }
+  },
+  "functions": {
+    "api/index.py": {
+      "includeFiles": ["services/**", "db/**", "pipeline/**", "exogenas/**", "facturas/**"]
     }
   }
 }
