@@ -41,7 +41,7 @@ python -m pytest --cov=. --cov-report=term-missing
 TaxOps procesa facturas electrónicas DIAN (PDF/XML) colombianas en un pipeline:
 `facturas/` → `facturas/extractor.py` → `validator.py` → `prorateo.py` → `excel_writer.py` / PostgreSQL
 
-**Stack:** FastAPI 0.115 · Next.js 15.3 (React 19) · PostgreSQL 16 · SQLAlchemy · Groq/OpenAI/Anthropic/Google · Docker · Railway
+**Stack:** FastAPI 0.115 · Next.js 15.3 (React 19) · PostgreSQL (Supabase) · SQLAlchemy · Groq/OpenAI/Anthropic/Google · Docker · Vercel
 
 ### Module responsibilities
 
@@ -165,9 +165,45 @@ tests/
 ### CI/CD
 
 - **`.github/workflows/ci.yml`** — flake8 + mypy (api-lint), pytest pipeline tests (api-test), ESLint + tsc (web-lint), next build (web-build). Corre en push/PR a main.
-- **`.github/workflows/deploy.yml`** — Se activa cuando CI pasa. Llama Railway GraphQL API para redeploy. **Si Railway tiene auto-deploy ON en el repo, desactivarlo para evitar doble deploy.** Secretos requeridos: `RAILWAY_API_TOKEN`, `RAILWAY_SERVICE_API_ID`, `RAILWAY_SERVICE_WEB_ID`.
-- **`taxops-web/next.config.ts`** — `INTERNAL_API_URL` se bake en build time. Tiene `.trim()` defensivo. Fallback: `NEXT_PUBLIC_API_URL` → `http://localhost:8000`.
-- **Alembic**: `api/alembic/versions/001_baseline.py` (marker), `002_audit_groups.py` (deleted_at + groups + audit_logs).
+- **Vercel auto-deploy** — Vercel despliega automáticamente en cada push a `main`. No requiere workflow de deploy separado. Configurado via `vercel.json` en la raíz con `experimentalServices`.
+- **`taxops-web/next.config.ts`** — `INTERNAL_API_URL` para Docker local (e.g. `http://api:8000`). `NEXT_PUBLIC_API_URL` para Vercel (e.g. `https://tax-ops.vercel.app/_/web`). Fallback: `http://localhost:8000`.
+- **`vercel.json` (raíz)** — Define dos servicios: `taxops-web` (Next.js en `/`) y `web` (FastAPI Python en `/_/web`). Entry point Python: `api/index.py` → re-exporta `app` de `api/main.py`.
+- **`api/index.py`** — Entry point ASGI para Vercel. Solo hace `from main import app`.
+- **Alembic**: `api/alembic/versions/001_baseline.py` (marker), `002_audit_groups.py` (deleted_at + groups + audit_logs). Corre automáticamente en startup via `lifespan` de FastAPI.
+
+### Deployment — Vercel + Supabase
+
+**Servicios en producción:**
+- **Frontend**: `https://tax-ops.vercel.app` → `taxops-web` (Next.js 15)
+- **API**: `https://tax-ops.vercel.app/_/web` → `web` service (FastAPI Python)
+- **DB**: Supabase PostgreSQL — proyecto `dhiopkrtaubeogjehopb` (us-west-1)
+
+**Variables de entorno requeridas en Vercel:**
+
+Para `web` (Python/FastAPI):
+```
+DATABASE_URL        → Connection string de Supabase (Session pooler, puerto 5432)
+SECRET_KEY          → openssl rand -hex 32
+ALGORITHM           → HS256
+ALLOWED_ORIGINS     → https://tax-ops.vercel.app
+API_BASE_URL        → https://tax-ops.vercel.app/_/web
+FRONTEND_URL        → https://tax-ops.vercel.app
+GROQ_API_KEY        → desde console.groq.com
+TAXOPS_ENV          → production
+TAXOPS_SUPERADMIN_EMAILS → arqueinja@gmail.com
+BOOTSTRAP_SECRET    → string secreto para /setup/bootstrap
+```
+
+Para `taxops-web` (Next.js):
+```
+NEXT_PUBLIC_API_URL → https://tax-ops.vercel.app/_/web
+```
+
+**Bootstrap inicial (una sola vez tras el primer deploy):**
+```bash
+curl -X POST "https://tax-ops.vercel.app/_/web/setup/bootstrap" \
+  -d "secret=TU_BOOTSTRAP_SECRET&org_slug=taxops&org_name=TaxOps&email=tu@email.com&password=TuClave123"
+```
 
 ### Próximos pasos
 
