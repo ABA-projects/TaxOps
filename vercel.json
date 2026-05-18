@@ -6,7 +6,7 @@
       "framework": "nextjs"
     },
     "web": {
-      "entrypoint": "api",
+      "entrypoint": ".",
       "routePrefix": "/_/web"
     }
   }
