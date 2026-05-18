@@ -1,10 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   async rewrites() {
-    // INTERNAL_API_URL → Docker/Railway internal URL (e.g. http://api:8000)
-    // Falls back to NEXT_PUBLIC_API_URL or localhost for local dev without docker
+    // INTERNAL_API_URL → Docker internal URL (e.g. http://api:8000)
+    // NEXT_PUBLIC_API_URL → Vercel: public URL of the web service (https://<host>/_/web)
     const api = (
       process.env.INTERNAL_API_URL ??
       process.env.NEXT_PUBLIC_API_URL ??

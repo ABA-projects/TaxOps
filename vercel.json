@@ -1,0 +1,13 @@
+{
+  "experimentalServices": {
+    "taxops-web": {
+      "entrypoint": "taxops-web",
+      "routePrefix": "/",
+      "framework": "nextjs"
+    },
+    "web": {
+      "entrypoint": "api",
+      "routePrefix": "/_/web"
+    }
+  }
+}
