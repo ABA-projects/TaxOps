@@ -12,7 +12,7 @@
   },
   "functions": {
     "api/index.py": {
-      "includeFiles": ["services/**", "db/**", "pipeline/**", "exogenas/**", "facturas/**"]
+      "includeFiles": ["services/**", "db/**", "pipeline/**", "exogenas/**"]
     }
   }
 }

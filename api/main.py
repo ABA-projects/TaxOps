@@ -12,10 +12,13 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-# Asegurar que pipeline/, services/, db/, exogenas/ sean importables
-_ROOT = Path(__file__).parent.parent
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))
+# Local dev: parent.parent = project root where services/, db/ etc. live
+# Vercel:    parent       = /var/task/ where includeFiles bundles services/, db/ etc.
+_API_DIR = Path(__file__).parent
+_ROOT = _API_DIR.parent
+for _p in [str(_API_DIR), str(_ROOT)]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 from contextlib import asynccontextmanager
 
