@@ -17,13 +17,12 @@ _SessionLocal = None
 if _DATABASE_URL:
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker, Session
+    from sqlalchemy.pool import NullPool
     _engine = create_engine(
         _DATABASE_URL,
-        pool_pre_ping=True,
-        pool_size=2,
-        max_overflow=5,
+        poolclass=NullPool,   # serverless: no persistent connections
         echo=False,
-        connect_args={"connect_timeout": 3},
+        connect_args={"connect_timeout": 10, "sslmode": "require"},
     )
     _SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=_engine)
 
