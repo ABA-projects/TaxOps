@@ -44,21 +44,26 @@ def get_db() -> Generator:
         db.close()
 
 
+_db_last_error: str = ""
+
+
 def db_available() -> bool:
     """True if PostgreSQL is reachable. Caches True permanently; retries on False."""
-    global _db_status
+    global _db_status, _db_last_error
     if _DATABASE_URL is None:
+        _db_last_error = "DATABASE_URL not set"
         return False
     if _db_status is True:
         return True
-    # Never cache False — always retry so a transient startup failure doesn't block forever
     try:
         from sqlalchemy import text
         with get_db() as db:
             db.execute(text("SELECT 1"))
         _db_status = True
+        _db_last_error = ""
         return True
-    except Exception:
+    except Exception as exc:
+        _db_last_error = str(exc)
         return False
 
 

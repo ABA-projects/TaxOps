@@ -70,12 +70,15 @@ app.include_router(nomina.router)
 
 @app.get("/health", tags=["Health"])
 async def health() -> dict:
-    from db.database import db_available
+    from db.database import db_available, _db_last_error, _DATABASE_URL
 
+    ok = db_available()
     return {
         "status": "ok",
         "version": "2.0.0",
-        "db": "connected" if db_available() else "unavailable",
+        "db": "connected" if ok else "unavailable",
+        "db_error": _db_last_error if not ok else None,
+        "db_url_set": _DATABASE_URL is not None,
     }
 
 
