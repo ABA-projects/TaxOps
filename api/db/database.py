@@ -44,27 +44,27 @@ def get_db() -> Generator:
         db.close()
 
 
-_db_last_error: str = ""
-
-
 def db_available() -> bool:
     """True if PostgreSQL is reachable. Caches True permanently; retries on False."""
-    global _db_status, _db_last_error
+    ok, _ = db_status()
+    return ok
+
+
+def db_status() -> tuple[bool, str]:
+    """Returns (is_available, error_message)."""
+    global _db_status
     if _DATABASE_URL is None:
-        _db_last_error = "DATABASE_URL not set"
-        return False
+        return False, "DATABASE_URL not set"
     if _db_status is True:
-        return True
+        return True, ""
     try:
         from sqlalchemy import text
         with get_db() as db:
             db.execute(text("SELECT 1"))
         _db_status = True
-        _db_last_error = ""
-        return True
+        return True, ""
     except Exception as exc:
-        _db_last_error = str(exc)
-        return False
+        return False, str(exc)
 
 
 def get_existing_cufes(org_id: str) -> set[str]:
